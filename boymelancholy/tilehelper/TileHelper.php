@@ -10,6 +10,10 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockIds;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
+use pocketmine\nbt\JsonNbtParser;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 use pocketmine\tile\Sign;
@@ -19,25 +23,86 @@ use pocketmine\tile\Tile;
 
 /**
  * Tileのヘルパー
- * チェスト、アイテムフレーム、釜戸
+ * チェスト、アイテムフレーム、釜戸、看板
  *
  * @author boymelancholy
  */
 class TileHelper
 {
     /**
-     * 扱えるタイルオブジェクトか確認
+     * 扱えるチェストか確認
      *
      * @param Block $block
-     * @return boolean
+     * @return Chest|null
      */
-    public static function isValidTile(Block $block) :bool
+    public static function isValidChestTile(Block $block) :?Chest
     {
         $tile = $block->getLevel()->getTile($block);
-        if ($tile instanceof Tile) {
-            return ($tile->isValid());
+        if ($tile instanceof Chest) {
+            if ($tile->isValid()) {
+                return $tile;
+            } else {
+                return null;
+            }
         }
-        return false;
+        return null;
+    }
+
+    /**
+     * 扱える看板か確認
+     *
+     * @param Block $block
+     * @return Sign|null
+     */
+    public static function isValidSignTile(Block $block) :?Sign
+    {
+        $tile = $block->getLevel()->getTile($block);
+        if ($tile instanceof Sign) {
+            if ($tile->isValid()) {
+                return $tile;
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 扱える釜戸か確認
+     *
+     * @param Block $block
+     * @return Furnace|null
+     */
+    public static function isValidFurnaceTile(Block $block) :?Furnace
+    {
+        $tile = $block->getLevel()->getTile($block);
+        if ($tile instanceof Furnace) {
+            if ($tile->isValid()) {
+                return $tile;
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 扱えるアイテムフレームか確認
+     *
+     * @param Block $block
+     * @return ItemFrame|null
+     */
+    public static function isValidItemFrameTile(Block $block) :?ItemFrame
+    {
+        $tile = $block->getLevel()->getTile($block);
+        if ($tile instanceof ItemFrame) {
+            if ($tile->isValid()) {
+                return $tile;
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -101,6 +166,59 @@ class TileHelper
             $sign->setLine($i, $overwriting[$i]);
         }
         $sign->saveNBT();
+    }
+
+    /**
+     * 鍵付きチェストの取得
+     *
+     * @param string $key 鍵の名前
+     * @return Item
+     */
+    public static function getLockedChest(string $key) :Item
+    {
+        $item = ItemFactory::get(ItemIds::CHEST);
+        $item->setNamedTag(JsonNbtParser::parseJson('BlockEntityTag:{Lock:'.$key.'}'));
+        return $item;
+    }
+
+    /**
+     * 鍵付き釜戸の取得
+     *
+     * @param string $key 鍵の名前
+     * @return Item
+     */
+    public static function getLockedFurnace(string $key) :Item
+    {
+        $item = ItemFactory::get(ItemIds::FURNACE);
+        $item->setNamedTag(JsonNbtParser::parseJson('BlockEntityTag:{Lock:'.$key.'}'));
+        return $item;
+    }
+
+    /**
+     * 施錠するアイテムの作成
+     *
+     * @param Item $item
+     * @param string $key 鍵の名前
+     * @return Item
+     */
+    public static function getUnLockKey(Item $item, string $key) :Item
+    {
+        $item = clone $item;
+        $item->setCustomName($key);
+        return $item;
+    }
+
+    /**
+     * 文字を含む看板の取得
+     *
+     * @param string[] $lines
+     * @return Item
+     */
+    public static function getWrittenSign(array $lines) :Item
+    {
+        $item = ItemFactory::get(ItemIds::SIGN);
+        $item->setNamedTag(JsonNbtParser::parseJson('{BlockEntityTag:{Text1:'.$lines[0].',Text2:'.$lines[1].',Text3:'.$lines[2].',Text4:'.$lines[3].'}}'));
+        return $item;
     }
 
     /**
