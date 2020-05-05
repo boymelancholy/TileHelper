@@ -138,4 +138,16 @@ class TileHelper
 
         return $fake->getInventory();
     }
+
+    /**
+     * インベントリーの情報置き換え
+     *
+     * @param Inventory $base
+     * @param Inventory $latest
+     * @return void
+     */
+    public static function updateInventory(Inventory $base, Inventory $latest) :void
+    {
+        $base->setContents($latest->getContents());
+    }
 }
