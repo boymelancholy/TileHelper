@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TileHandleAPI\boymelancholy\tileapi\utils;
+namespace boymelancholy\tilehelper\utils;
 
 /**
- * 展示アイテムの角度
+ * フレームに飾られたアイテムの角度
  *
  * @author boymelancholy
  */
-class ExhibitAngle
+class Angle
 {
     const ANGLE_0 = 0;
     const ANGLE_45 = 1;
