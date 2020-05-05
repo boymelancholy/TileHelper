@@ -232,20 +232,21 @@ class TileHelper
     {
         $makePos = $player->add(0, 3, 0);
         $level = $player->getLevel();
-        $nbt = Tile::createNBT($makePos);
         switch (true) {
 
             case $baseTile instanceof Chest:
-                $block = $level->setBlock($makePos, BlockFactory::get(BlockIds::CHEST));
+                $level->setBlock($makePos, BlockFactory::get(BlockIds::CHEST));
+                $nbt = Chest::createNBT($makePos);
                 $type = Tile::CHEST;
             break;
 
             case $baseTile instanceof Furnace:
-                $block = $level->setBlock($makePos, BlockFactory::get(BlockIds::FURNACE));
+                $level->setBlock($makePos, BlockFactory::get(BlockIds::FURNACE));
+                $nbt = Furnace::createNBT($makePos);
                 $type = Tile::FURNACE;
             break;
         }
-        $level->sendBlocks([$player], [$block]);
+        $level->sendBlocks([$player], [$level->getBlock($makePos)]);
         $fake = Tile::createTile($type, $level, $nbt);
 
         /** @var Chest|Furnace $fake */
