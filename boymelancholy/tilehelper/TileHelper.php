@@ -252,7 +252,7 @@ class TileHelper
         /** @var Chest|Furnace $fake */
         $fake->spawnTo($player);
 
-        $contents = $fake->getInventory()->getContents();
+        $contents = $baseTile->getInventory()->getContents();
         $fake->getInventory()->setContents($contents);
 
         return $fake->getInventory();
